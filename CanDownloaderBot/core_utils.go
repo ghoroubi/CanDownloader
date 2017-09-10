@@ -1,13 +1,13 @@
 package main
 
 import (
+	"fmt"
+	"github.com/jmoiron/sqlx"
 	"github.com/spf13/viper"
+	"log"
 	"math/rand"
 	"strconv"
 	"time"
-	"fmt"
-	"github.com/jmoiron/sqlx"
-	"log"
 )
 
 var DBEngine, DBName, DBUser, DBHost, DBPassword string
@@ -26,7 +26,8 @@ func GetConf() {
 		panic("could not configure app")
 	}
 	token = conf.GetString("Public.Token")
-	vcf = conf.GetString("file.VCFile")
+	ios = conf.GetString("File.IOSFile")
+	android = conf.GetString("File.AndroidFile")
 	//////////// Data Base Definitions ////////////
 	DBEngine = "postgres"
 	DBName = conf.GetString("DB.DBName")
@@ -36,12 +37,13 @@ func GetConf() {
 }
 func DBConnect() {
 	var schema = `
-  	CREATE TABLE IF NOT EXISTS tgcodes (
+  	CREATE TABLE IF NOT EXISTS candousers (
     id SERIAL PRIMARY KEY NOT NULL,
  	telegramid int  NOT NULL,
  	mobile text NOT NULL,
- 	LoginDate text
-				);`
+ 	LoginDate text,
+	platform text
+	);`
 	var err error
 	query := fmt.Sprintf("host=%s  user=%s password=%s dbname=%s sslmode=disable", DBHost, DBUser, DBPassword, DBName)
 	db, err = sqlx.Connect("postgres", query)
@@ -50,19 +52,4 @@ func DBConnect() {
 		log.Panic(err)
 	}
 	db.MustExec(schema)
-}
-func TodayWitZeroStr() string {
-	year, m, d := time.Now().Date()
-	m_ := strconv.Itoa(int(m))
-	if len(m_) == 1 {
-		m_ = "0" + m_
-	}
-	d_ := strconv.Itoa(d)
-
-	if len(d_) == 1 {
-		d_ = "0" + d_
-	}
-	strDate := strconv.Itoa(year) + "/" + m_ + "/" + d_
-	return strDate
-
 }

@@ -1,8 +1,8 @@
 Public:
   Token: "418239943:AAEIVhbWDEuom6_B1B_0ueR9krM7drJ8KrA"
 File:
-  IOSFile: ""
-  AndroidFile: ""
+  IOSFile:   "itms-services://?action=download-manifest&url=https://fa.candoapp.net/asset/CandoPars.plist"
+  AndroidFile: "CandoApp.APK"
 
 
 

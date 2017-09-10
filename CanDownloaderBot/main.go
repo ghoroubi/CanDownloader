@@ -1,43 +1,37 @@
 package main
 
 import (
+	_ "database/sql"
+	"fmt"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	_    "database/sql"
-	"fmt"
-	//_ "github.com/denisenkom/go-mssqldb"
 	"github.com/spf13/viper"
 	"gopkg.in/telegram-bot-api.v4"
 	"log"
-	//"strconv"
-	//	"strconv"
 	"time"
 )
 
-var TelegramID int
 var db *sqlx.DB
 var err error
-var
-	conf *viper.Viper
+var conf *viper.Viper
 var bot *tgbotapi.BotAPI
+
 //var dbName, password, userId, server string
 var token string
-var UserWantToView bool
-//var maxRand int
-var vcf string
-var TUser TelegramUser
-var SecurityCode int
-var PID string
+var ios, android string
+var CUser CandoUser
 
+type CandoUser struct {
+	TelegramID   int    `json:"telegram_id"`
+	MobileNumber string `json:"mobile_number"`
 
+}
 
 //watowato_bot
 func main() {
 
 	GetConf()
 	DBConnect()
-	UserWantToView = true
-	//_token :="AAF04OXimpY6CLZjxAQOoFKWrsVQuWjB1zI"
 	bot, err = tgbotapi.NewBotAPI(token)
 	if err != nil {
 		fmt.Println(err)
@@ -55,7 +49,7 @@ func main() {
 			fmt.Println("Normal Message", update.Message.Text)
 			TUser.TelegramID = update.Message.From.ID
 			TUser.MobileNumber = GetMobile(update.Message.Chat.ID, TUser.TelegramID)
-			fmt.Printf("tid:%d ___ mobile:%s",TUser.TelegramID,TUser.MobileNumber)
+			fmt.Printf("tid:%d ___ mobile:%s", TUser.TelegramID, TUser.MobileNumber)
 			switch update.Message.Text {
 
 			case "/start":
@@ -76,29 +70,29 @@ func main() {
 				TUser.TelegramID = update.Message.From.ID
 				TUser.MobileNumber = GetMobile(update.Message.Chat.ID, TUser.TelegramID)
 				PID = PackageOneID
-				if TUser.MobileNumber =="" || TUser.MobileNumber==ItsMyNumber{
+				if TUser.MobileNumber == "" || TUser.MobileNumber == ItsMyNumber {
 
 					SendForceReply(update.Message.Chat.ID, EnterNumberForCheck_Buy)
-				}else{
-					tmsg:=fmt.Sprintf(ShowMobile,TUser.MobileNumber)
-					msg:=tgbotapi.NewMessage(update.Message.Chat.ID,tmsg)
-					msg.ReplyMarkup=GetPlanConfirm()
+				} else {
+					tmsg := fmt.Sprintf(ShowMobile, TUser.MobileNumber)
+					msg := tgbotapi.NewMessage(update.Message.Chat.ID, tmsg)
+					msg.ReplyMarkup = GetPlanConfirm()
 					bot.Send(msg)
 				}
-		/*	case Plan2:
-				UserWantToView = false
-				TUser.TelegramID = update.Message.From.ID
-				TUser.MobileNumber = GetMobile(update.Message.Chat.ID, TUser.TelegramID)
-				PID = PackageTwoID
-				if TUser.MobileNumber =="" || TUser.MobileNumber==ItsMyNumber{
+				/*	case Plan2:
+					UserWantToView = false
+					TUser.TelegramID = update.Message.From.ID
+					TUser.MobileNumber = GetMobile(update.Message.Chat.ID, TUser.TelegramID)
+					PID = PackageTwoID
+					if TUser.MobileNumber =="" || TUser.MobileNumber==ItsMyNumber{
 
-					SendForceReply(update.Message.Chat.ID, EnterNumberForCheck_Buy)
-				}else{
-					tmsg:=fmt.Sprintf(ShowMobile,TUser.MobileNumber)
-					msg:=tgbotapi.NewMessage(update.Message.Chat.ID,tmsg)
-					msg.ReplyMarkup=GetPlanConfirm()
-					bot.Send(msg)
-				}*/
+						SendForceReply(update.Message.Chat.ID, EnterNumberForCheck_Buy)
+					}else{
+						tmsg:=fmt.Sprintf(ShowMobile,TUser.MobileNumber)
+						msg:=tgbotapi.NewMessage(update.Message.Chat.ID,tmsg)
+						msg.ReplyMarkup=GetPlanConfirm()
+						bot.Send(msg)
+					}*/
 				//SendForceReply(update.Message.Chat.ID, EnterNumberForCheck_Buy)
 				/*GetUserInfo(update.Message.Chat.ID,TelegramID)
 				SumPlan(update.Message.Chat.ID, TelegramID,GetConfirmMobileToActivationKeys)*/
@@ -111,31 +105,31 @@ func main() {
 				UserWantToView = true
 				TUser.TelegramID = update.Message.From.ID
 				TUser.MobileNumber = GetMobile(update.Message.Chat.ID, TUser.TelegramID)
-				if TUser.MobileNumber=="" || TUser.MobileNumber==ItsMyNumber{
-					SendForceReply(update.Message.Chat.ID,EnterNumberForCheck)
-				}else {
+				if TUser.MobileNumber == "" || TUser.MobileNumber == ItsMyNumber {
+					SendForceReply(update.Message.Chat.ID, EnterNumberForCheck)
+				} else {
 					tmsg := fmt.Sprintf(ShowMobile, TUser.MobileNumber)
 					msg := tgbotapi.NewMessage(update.Message.Chat.ID, tmsg)
 					msg.ReplyMarkup = GetConfirmMobileToActivationKeys()
 					bot.Send(msg)
 				}
 			case Confirm:
-				af:=true
+				af := true
 				/*NewUserQuery := fmt.Sprintf("UPDATE tbcodes SET mobile='%s' WHERE telegramid=%d", TUser.MobileNumber,update.Message.From.ID)
 				db.Exec(NewUserQuery)*/
-				CheckMobileNumber(TUser.MobileNumber,update.Message.Chat.ID,&af)
+				CheckMobileNumber(TUser.MobileNumber, update.Message.Chat.ID, &af)
 				/*SendSecCode(update.Message.Chat.ID,TUser.MobileNumber)
 				SendForceReply(update.Message.Chat.ID, SendCodeNotification)*/
 			case ChangeNumber:
-				SendForceReply(update.Message.Chat.ID,EnterNumberForCheck)
+				SendForceReply(update.Message.Chat.ID, EnterNumberForCheck)
 			case Cancel:
 				TelegramID = update.Message.From.ID
 				SendTextMessage(update.Message.Chat.ID, HomeDirected, GetHomeKeys)
 			case ItsMyNumber:
 				af := true
-				if TUser.MobileNumber=="" || TUser.MobileNumber==ItsMyNumber {
+				if TUser.MobileNumber == "" || TUser.MobileNumber == ItsMyNumber {
 					SendForceReply(update.Message.Chat.ID, EnterNumberForCheck_Buy)
-				}else{
+				} else {
 					CheckMobileNumber(TUser.MobileNumber, update.Message.Chat.ID, &af)
 
 					fmt.Println(af, "FlagStatus")
@@ -144,11 +138,11 @@ func main() {
 
 					}
 				}
-					/*msg:=tgbotapi.NewMessage(update.Message.Chat.ID,MobileIsWrong)
-					bot.Send(msg)*/
-					//SendForceReply(update.Message.Chat.ID,MobileIsWrong)
+				/*msg:=tgbotapi.NewMessage(update.Message.Chat.ID,MobileIsWrong)
+				bot.Send(msg)*/
+				//SendForceReply(update.Message.Chat.ID,MobileIsWrong)
 			case ChangeTheNumebr:
-				SendForceReply(update.Message.Chat.ID,EnterNumberForCheck_Buy)
+				SendForceReply(update.Message.Chat.ID, EnterNumberForCheck_Buy)
 			}
 		}
 		if update.Message.ReplyToMessage != nil {
@@ -158,29 +152,29 @@ func main() {
 			case EnterNumberForCheck_Buy:
 				flag := true
 				if MobileIsValid(update.Message.Text) {
-					TUser.MobileNumber=update.Message.Text
-					TUser.TelegramID=update.Message.From.ID
-					NewUserQuery := fmt.Sprintf("UPDATE tgcodes SET (mobile='%s',LoginDate='%s' WHERE telegramid=%d", TUser.MobileNumber,TimeFormat(time.Now()),update.Message.From.ID)
+					TUser.MobileNumber = update.Message.Text
+					TUser.TelegramID = update.Message.From.ID
+					NewUserQuery := fmt.Sprintf("UPDATE tgcodes SET (mobile='%s',LoginDate='%s' WHERE telegramid=%d", TUser.MobileNumber, TimeFormat(time.Now()), update.Message.From.ID)
 					db.Exec(NewUserQuery)
 					CheckMobileNumber(update.Message.Text, update.Message.Chat.ID, &flag)
 					fmt.Println(flag, "FlagStatus")
 					if flag == true {
-						ShowInvoice(update.Message.Chat.ID, PID, TUser.MobileNumber)//TUser wa update.message.text
+						ShowInvoice(update.Message.Chat.ID, PID, TUser.MobileNumber) //TUser wa update.message.text
 						//TUser.MobileNumber=update.Message.Text
 					}
-				}else {
+				} else {
 					//SendTextMessage(update.Message.Chat.ID,MobileIsWrong,nil)
 					/*msg:=tgbotapi.NewMessage(update.Message.Chat.ID,MobileIsWrong)
 					bot.Send(msg)*/
-					SendForceReply(update.Message.Chat.ID,MobileIsWrong)
+					SendForceReply(update.Message.Chat.ID, MobileIsWrong)
 				}
 			case MobileIsWrong:
 				flag := true
 
 				if MobileIsValid(update.Message.Text) {
-					TUser.MobileNumber=update.Message.Text
-					TUser.TelegramID=update.Message.From.ID
-					NewUserQuery := fmt.Sprintf("UPDATE tgcodes SET (mobile='%s',LoginDate='%s') WHERE telegramid=%d", TUser.MobileNumber,TimeFormat(time.Now()),update.Message.From.ID)
+					TUser.MobileNumber = update.Message.Text
+					TUser.TelegramID = update.Message.From.ID
+					NewUserQuery := fmt.Sprintf("UPDATE tgcodes SET (mobile='%s',LoginDate='%s') WHERE telegramid=%d", TUser.MobileNumber, TimeFormat(time.Now()), update.Message.From.ID)
 					db.Exec(NewUserQuery)
 					CheckMobileNumber(update.Message.Text, update.Message.Chat.ID, &flag)
 					//TUser.MobileNumber=update.Message.Text
@@ -189,49 +183,49 @@ func main() {
 						ShowInvoice(update.Message.Chat.ID, PID, update.Message.Text)
 						//TUser.MobileNumber=update.Message.Text
 					}
-				}else {
+				} else {
 					//SendTextMessage(update.Message.Chat.ID,MobileIsWrong,nil)
 					/*msg:=tgbotapi.NewMessage(update.Message.Chat.ID,MobileIsWrong)
 					bot.Send(msg)*/
-					SendForceReply(update.Message.Chat.ID,MobileIsWrong)
+					SendForceReply(update.Message.Chat.ID, MobileIsWrong)
 				}
 			case MobileIsWrong_CheckingCase:
 				if MobileIsValid(update.Message.Text) {
-					TUser.MobileNumber=update.Message.Text
-					TUser.TelegramID=update.Message.From.ID
-					NewUserQuery := fmt.Sprintf("UPDATE tgcodes SET (mobile='%s',LoginDate='%s') WHERE telegramid=%d", TUser.MobileNumber,TimeFormat(time.Now()),update.Message.From.ID)
+					TUser.MobileNumber = update.Message.Text
+					TUser.TelegramID = update.Message.From.ID
+					NewUserQuery := fmt.Sprintf("UPDATE tgcodes SET (mobile='%s',LoginDate='%s') WHERE telegramid=%d", TUser.MobileNumber, TimeFormat(time.Now()), update.Message.From.ID)
 					db.Exec(NewUserQuery)
 					SendSecCode(update.Message.Chat.ID, update.Message.Text)
 					//TUser.MobileNumber = update.Message.Text
 					SendForceReply(update.Message.Chat.ID, SendCodeNotification)
 					//CheckMobileNumber(update.Message.Text, update.Message.Chat.ID)
-				}else{
+				} else {
 					//SendTextMessage(update.Message.Chat.ID,MobileIsWrong,nil)
 					/*msg:=tgbotapi.NewMessage(update.Message.Chat.ID,MobileIsWrong)
 					bot.Send(msg)*/
-					SendForceReply(update.Message.Chat.ID,MobileIsWrong_CheckingCase)
+					SendForceReply(update.Message.Chat.ID, MobileIsWrong_CheckingCase)
 				}
 			case EnterNumberForCheck:
 				if MobileIsValid(update.Message.Text) {
-					TUser.MobileNumber=update.Message.Text
-					TUser.TelegramID=update.Message.From.ID
-					NewUserQuery := fmt.Sprintf("UPDATE tgcodes SET (mobile='%s',LoginDate='%s') WHERE telegramid=%d", TUser.MobileNumber,TimeFormat(time.Now()),update.Message.From.ID)
+					TUser.MobileNumber = update.Message.Text
+					TUser.TelegramID = update.Message.From.ID
+					NewUserQuery := fmt.Sprintf("UPDATE tgcodes SET (mobile='%s',LoginDate='%s') WHERE telegramid=%d", TUser.MobileNumber, TimeFormat(time.Now()), update.Message.From.ID)
 					db.Exec(NewUserQuery)
 					SendSecCode(update.Message.Chat.ID, update.Message.Text)
-				//	TUser.MobileNumber = update.Message.Text
+					//	TUser.MobileNumber = update.Message.Text
 					SendForceReply(update.Message.Chat.ID, SendCodeNotification)
 					//CheckMobileNumber(update.Message.Text, update.Message.Chat.ID)
-				}else{
+				} else {
 					//SendTextMessage(update.Message.Chat.ID,MobileIsWrong,nil)
 					/*msg:=tgbotapi.NewMessage(update.Message.Chat.ID,MobileIsWrong)
 					bot.Send(msg)*/
-					SendForceReply(update.Message.Chat.ID,MobileIsWrong_CheckingCase)
+					SendForceReply(update.Message.Chat.ID, MobileIsWrong_CheckingCase)
 				}
 			case SendCodeNotification:
 				SecCodeReview(update.Message.Chat.ID, update.Message.Text)
 
 			case WrongCode:
-				SecCodeReview(update.Message.Chat.ID,update.Message.Text)
+				SecCodeReview(update.Message.Chat.ID, update.Message.Text)
 				/*SendSecCode(update.Message.Chat.ID, update.Message.Text)
 				SendForceReply(update.Message.Chat.ID, SendCodeNotification)*/
 			}
