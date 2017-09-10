@@ -1,9 +1,12 @@
 Public:
-  Token: "418239943:AAEIVhbWDEuom6_B1B_0ueR9krM7drJ8KrA"
+  Token: "435359826:AAG7q6SlRboybjzdpQsaRljoLxUuYADyLFk"
 File:
   IOSFile:   "itms-services://?action=download-manifest&url=https://fa.candoapp.net/asset/CandoPars.plist"
-  AndroidFile: "CandoApp.APK"
-
-
+  AndroidFile: "AndroidFile.py"
+DB:
+  DBName: "Candousers"
+  DBHost: "localhost"
+  DBUser: "postgres"
+  DBPassword: "RK@Server8285"
 
 
