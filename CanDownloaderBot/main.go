@@ -15,16 +15,14 @@ var err error
 var conf *viper.Viper
 var bot *tgbotapi.BotAPI
 var token string
-var ios, android string
+var Ios, Android string
 var CUser CandoUser
 
 type CandoUser struct {
 	TelegramID   int    `json:"telegram_id"`
 	MobileNumber string `json:"mobile_number"`
-
 }
 
-//watowato_bot
 func main() {
 
 	GetConf()
@@ -59,12 +57,12 @@ func main() {
 			case iOSDownload:
 				CUser.TelegramID = update.Message.From.ID
 				CUser.MobileNumber = GetMobile(update.Message.Chat.ID, CUser.TelegramID)
-				Download(update.Message.Chat.ID, iOSDownload)
+				Download(update.Message.Chat.ID, Ios)
 
 			case AndroidDownload:
 				CUser.TelegramID = update.Message.From.ID
 				CUser.MobileNumber = GetMobile(update.Message.Chat.ID, CUser.TelegramID)
-				Download(update.Message.Chat.ID, AndroidDownload)
+				Download(update.Message.Chat.ID, Android)
 
 			}
 			/*	if update.Message.ReplyToMessage != nil {
@@ -86,8 +84,8 @@ func main() {
 						}
 					} else {
 						//SendTextMessage(update.Message.Chat.ID,MobileIsWrong,nil)
-						*//*msg:=tgbotapi.NewMessage(update.Message.Chat.ID,MobileIsWrong)
-						bot.Send(msg)*//*
+			*/ /*msg:=tgbotapi.NewMessage(update.Message.Chat.ID,MobileIsWrong)
+			bot.Send(msg)*/ /*
 						SendForceReply(update.Message.Chat.ID, MobileIsWrong)
 					}
 				case MobileIsWrong:
@@ -107,8 +105,8 @@ func main() {
 						}
 					} else {
 						//SendTextMessage(update.Message.Chat.ID,MobileIsWrong,nil)
-						*//*msg:=tgbotapi.NewMessage(update.Message.Chat.ID,MobileIsWrong)
-						bot.Send(msg)*//*
+			*/ /*msg:=tgbotapi.NewMessage(update.Message.Chat.ID,MobileIsWrong)
+			bot.Send(msg)*/ /*
 						SendForceReply(update.Message.Chat.ID, MobileIsWrong)
 					}
 				case MobileIsWrong_CheckingCase:
@@ -123,8 +121,8 @@ func main() {
 						//CheckMobileNumber(update.Message.Text, update.Message.Chat.ID)
 					} else {
 						//SendTextMessage(update.Message.Chat.ID,MobileIsWrong,nil)
-						*//*msg:=tgbotapi.NewMessage(update.Message.Chat.ID,MobileIsWrong)
-						bot.Send(msg)*//*
+			*/ /*msg:=tgbotapi.NewMessage(update.Message.Chat.ID,MobileIsWrong)
+			bot.Send(msg)*/ /*
 						SendForceReply(update.Message.Chat.ID, MobileIsWrong_CheckingCase)
 					}
 				case EnterNumberForCheck:
@@ -139,8 +137,8 @@ func main() {
 						//CheckMobileNumber(update.Message.Text, update.Message.Chat.ID)
 					} else {
 						//SendTextMessage(update.Message.Chat.ID,MobileIsWrong,nil)
-						*//*msg:=tgbotapi.NewMessage(update.Message.Chat.ID,MobileIsWrong)
-						bot.Send(msg)*//*
+			*/ /*msg:=tgbotapi.NewMessage(update.Message.Chat.ID,MobileIsWrong)
+			bot.Send(msg)*/ /*
 						SendForceReply(update.Message.Chat.ID, MobileIsWrong_CheckingCase)
 					}
 				case SendCodeNotification:
@@ -148,11 +146,10 @@ func main() {
 
 				case WrongCode:
 					SecCodeReview(update.Message.Chat.ID, update.Message.Text)
-					*//*SendSecCode(update.Message.Chat.ID, update.Message.Text)
-					SendForceReply(update.Message.Chat.ID, SendCodeNotification)*//*
+			*/ /*SendSecCode(update.Message.Chat.ID, update.Message.Text)
+			SendForceReply(update.Message.Chat.ID, SendCodeNotification)*/ /*
 				}
 			}*/
-				}
-			}
 		}
-
+	}
+}

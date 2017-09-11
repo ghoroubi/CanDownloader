@@ -31,8 +31,8 @@ func GetConf() {
 		panic("could not configure app")
 	}
 	token = conf.GetString("Public.Token")
-	ios = conf.GetString("File.IOSFile")
-	android = conf.GetString("File.AndroidFile")
+	Ios = conf.GetString("File.IOSFile")
+	Android = conf.GetString("File.AndroidFile")
 	//////////// Data Base Definitions ////////////
 	DBName = conf.GetString("DB.DBName")
 	DBHost = conf.GetString("DB.DBHost")
